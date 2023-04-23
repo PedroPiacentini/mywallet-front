@@ -2,13 +2,16 @@ import styled from "styled-components";
 import { Link, useNavigate } from "react-router-dom";
 import MyWalletLogo from "../components/MyWalletLogo";
 import { signIn } from "../services/apiAuth";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { UserContext } from "../contexts/UserContext";
 
 export default function SignInPage() {
   const [form, setForm] = useState({
     email: "",
     password: ""
   });
+  const { setUser } = useContext(UserContext);
+
   const navigate = useNavigate();
 
   function handleForm(e) {
@@ -20,7 +23,7 @@ export default function SignInPage() {
 
     signIn(form)
       .then(res => {
-        console.log(res.data);
+        setUser({ token: res.data })
         navigate("/home");
       })
       .catch(err => {
