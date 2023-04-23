@@ -1,15 +1,22 @@
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components"
 
 export default function TransactionsPage() {
+  const navigate = useNavigate();
+
+  function handleTransaction(e) {
+    e.preventDefault();
+    navigate("/home")
+  }
   return (
-    <TransactionsContainer>
+    < TransactionsContainer >
       <h1>Nova TRANSAÇÃO</h1>
-      <form>
-        <input placeholder="Valor" type="text"/>
+      <form onSubmit={handleTransaction}>
+        <input placeholder="Valor" type="text" />
         <input placeholder="Descrição" type="text" />
         <button>Salvar TRANSAÇÃO</button>
       </form>
-    </TransactionsContainer>
+    </ TransactionsContainer>
   )
 }
 
