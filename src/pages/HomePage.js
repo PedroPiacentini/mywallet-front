@@ -18,8 +18,7 @@ export default function HomePage() {
   function getTransactionsList() {
     getTransactions(user.token)
       .then(res => {
-        console.log(res.data);
-        setTransactions(res.data);
+        setTransactions(res.data.reverse());
       })
       .catch(err => {
         alert(err.response.data)
@@ -36,7 +35,7 @@ export default function HomePage() {
 
   let balance = 0;
   transactions.map(transaction => {
-    transaction.type === "deposit" ? balance += transaction.value : balance -= transaction.value;
+    transaction.type === "deposit" ? balance += parseFloat(transaction.value) : balance -= parseFloat(transaction.value);
   }
   );
 
@@ -49,53 +48,38 @@ export default function HomePage() {
 
       <TransactionsContainer>
         <ul>
-          {transactions.map(transaction => {
+          {transactions.reverse().map(transaction => {
             return (
-              <ListItemContainer>
+              <ListItemContainer key={transaction._id}>
                 <div>
                   <span>{transaction.date}</span>
                   <strong>{transaction.description}</strong>
                 </div>
-                <Value color={transaction.type === "cash-out" ? "negativo" : "positivo"}>{toReal(transaction.value.toFixed(2))}</Value>
+                <Value color={transaction.type === "cash-out" ? "negativo" : "positivo"}>{toReal(parseFloat(transaction.value).toFixed(2))}</Value>
               </ListItemContainer>
             )
           })}
-          <ListItemContainer>
-            <div>
-              <span>30/11</span>
-              <strong>Almoço mãe</strong>
-            </div>
-            <Value color={"negativo"}>120,00</Value>
-          </ListItemContainer>
-
-          <ListItemContainer>
-            <div>
-              <span>15/11</span>
-              <strong>Salário</strong>
-            </div>
-            <Value color={"positivo"}>3000,00</Value>
-          </ListItemContainer>
         </ul>
 
         <article>
           <strong>Saldo</strong>
-          <Value color={balance < 0 ? "negativo" : "positivo"}>{balance}</Value>
+          <Value color={balance < 0 ? "negativo" : "positivo"}>{toReal(balance.toFixed(2))}</Value>
         </article>
       </TransactionsContainer>
 
 
       <ButtonsContainer>
-        <button onClick={() => navigate("/nova-transacao/:deposit")}>
+        <button onClick={() => navigate("/nova-transacao/deposit")}>
           <AiOutlinePlusCircle />
           <p>Nova <br /> entrada</p>
         </button>
-        <button onClick={() => navigate("/nova-transacao/:cash-out")}>
+        <button onClick={() => navigate("/nova-transacao/cash-out")}>
           <AiOutlineMinusCircle />
           <p>Nova <br />saída</p>
         </button>
       </ButtonsContainer>
 
-    </HomeContainer>
+    </HomeContainer >
   )
 }
 

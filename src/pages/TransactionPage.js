@@ -1,9 +1,17 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../contexts/UserContext";
+import { createTransaction } from "../services/apiTransactions";
 
 export default function TransactionsPage() {
+  const type = useParams().tipo;
+  const [form, setForm] = useState({
+    value: "",
+    description: "",
+    type
+  });
+
   const navigate = useNavigate();
   const { user } = useContext(UserContext);
   useEffect(() => {
@@ -12,14 +20,39 @@ export default function TransactionsPage() {
 
   function handleTransaction(e) {
     e.preventDefault();
-    navigate("/home")
+    createTransaction(user.token, form)
+      .then(res => {
+        navigate("/home");
+      })
+      .catch(err => {
+        alert(err.response.data);
+      });
   }
+
+  function handleForm(e) {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  }
+
   return (
     < TransactionsContainer >
-      <h1>Nova TRANSAÇÃO</h1>
+      <h1>Nova {type === "deposit" ? "entrada" : "saída"}</h1>
       <form onSubmit={handleTransaction}>
-        <input placeholder="Valor" type="text" />
-        <input placeholder="Descrição" type="text" />
+        <input
+          placeholder="Valor"
+          name="value"
+          type="number"
+          value={form.value}
+          required
+          onChange={handleForm}
+        />
+        <input
+          placeholder="Descrição"
+          name="description"
+          type="text"
+          value={form.description}
+          required
+          onChange={handleForm}
+        />
         <button>Salvar TRANSAÇÃO</button>
       </form>
     </ TransactionsContainer>
