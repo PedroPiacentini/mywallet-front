@@ -2,18 +2,64 @@ import styled from "styled-components"
 import { BiExit } from "react-icons/bi"
 import { AiOutlineMinusCircle, AiOutlinePlusCircle } from "react-icons/ai"
 import { useNavigate } from "react-router-dom"
+import { UserContext } from "../contexts/UserContext"
+import { useContext, useEffect, useState } from "react"
+import { getTransactions } from "../services/apiTransactions"
+
 
 export default function HomePage() {
   const navigate = useNavigate();
+  const [transactions, setTransactions] = useState([]);
+  const { user } = useContext(UserContext);
+  function toReal(float) {
+    return float.toString().replace(".", ",");
+  }
+
+  function getTransactionsList() {
+    getTransactions(user.token)
+      .then(res => {
+        console.log(res.data);
+        setTransactions(res.data);
+      })
+      .catch(err => {
+        alert(err.response.data)
+      });
+  }
+
+  useEffect(() => {
+    if (!user.userName) {
+      navigate("/");
+      return;
+    }
+    getTransactionsList();
+  }, []);
+
+  let balance = 0;
+  transactions.map(transaction => {
+    transaction.type === "deposit" ? balance += transaction.value : balance -= transaction.value;
+  }
+  );
+
   return (
     <HomeContainer>
       <Header>
-        <h1>Olá, Fulano</h1>
+        <h1>Olá, {user.userName}</h1>
         <BiExit onClick={() => navigate("/")} />
       </Header>
 
       <TransactionsContainer>
         <ul>
+          {transactions.map(transaction => {
+            return (
+              <ListItemContainer>
+                <div>
+                  <span>{transaction.date}</span>
+                  <strong>{transaction.description}</strong>
+                </div>
+                <Value color={transaction.type === "cash-out" ? "negativo" : "positivo"}>{toReal(transaction.value.toFixed(2))}</Value>
+              </ListItemContainer>
+            )
+          })}
           <ListItemContainer>
             <div>
               <span>30/11</span>
@@ -33,7 +79,7 @@ export default function HomePage() {
 
         <article>
           <strong>Saldo</strong>
-          <Value color={"positivo"}>2880,00</Value>
+          <Value color={balance < 0 ? "negativo" : "positivo"}>{balance}</Value>
         </article>
       </TransactionsContainer>
 

@@ -23,7 +23,7 @@ export default function SignInPage() {
 
     signIn(form)
       .then(res => {
-        setUser({ token: res.data })
+        setUser(res.data);
         navigate("/home");
       })
       .catch(err => {

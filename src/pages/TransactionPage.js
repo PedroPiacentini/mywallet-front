@@ -1,8 +1,14 @@
 import { useNavigate } from "react-router-dom";
-import styled from "styled-components"
+import styled from "styled-components";
+import { useContext, useEffect } from "react";
+import { UserContext } from "../contexts/UserContext";
 
 export default function TransactionsPage() {
   const navigate = useNavigate();
+  const { user } = useContext(UserContext);
+  useEffect(() => {
+    if (!user.userName) { navigate("/") }
+  })
 
   function handleTransaction(e) {
     e.preventDefault();
