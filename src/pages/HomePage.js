@@ -15,26 +15,28 @@ export default function HomePage() {
     return float.toString().replace(".", ",");
   }
 
-  function getTransactionsList() {
-    getTransactions(user.token)
-      .then(res => {
-        setTransactions(res.data.reverse());
-      })
-      .catch(err => {
-        alert(err.response.data)
-      });
-  }
+
 
   useEffect(() => {
-    if (!user.userName) {
-      navigate("/");
-      return;
+    function getTransactionsList() {
+      getTransactions(user.token)
+        .then(res => {
+          setTransactions(res.data.reverse());
+        })
+        .catch(err => {
+          alert(err.response.data)
+        });
     }
-    getTransactionsList();
-  }, []);
+
+    if (!user) {
+      navigate("/");
+    } else {
+      getTransactionsList();
+    }
+  }, [user, navigate]);
 
   let balance = 0;
-  transactions.map(transaction => {
+  transactions.forEach(transaction => {
     transaction.type === "deposit" ? balance += parseFloat(transaction.value) : balance -= parseFloat(transaction.value);
   }
   );
@@ -42,8 +44,11 @@ export default function HomePage() {
   return (
     <HomeContainer>
       <Header>
-        <h1>Olá, {user.userName}</h1>
-        <BiExit onClick={() => navigate("/")} />
+        <h1>Olá, {user ? user.userName : "teste"}</h1>
+        <BiExit onClick={() => {
+          localStorage.removeItem("user");
+          navigate("/")
+        }} />
       </Header>
 
       <TransactionsContainer>

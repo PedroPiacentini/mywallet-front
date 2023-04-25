@@ -24,6 +24,7 @@ export default function SignInPage() {
     signIn(form)
       .then(res => {
         setUser(res.data);
+        localStorage.setItem("user", JSON.stringify(res.data));
         navigate("/home");
       })
       .catch(err => {
