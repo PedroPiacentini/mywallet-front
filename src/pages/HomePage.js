@@ -21,7 +21,7 @@ export default function HomePage() {
     function getTransactionsList() {
       getTransactions(user.token)
         .then(res => {
-          setTransactions(res.data.reverse());
+          setTransactions(res.data);
         })
         .catch(err => {
           alert(err.response.data)
